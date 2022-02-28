@@ -14,12 +14,18 @@ public class Robinet {
     }
 
     void debite(){
-        while (this.baignoire.getVol() < this.baignoire.getVolMax()){
-            if (this.baignoire.getVolMax() - this.baignoire.getVol() < this.volDebite){
-                this.baignoire.setVol(this.baignoire.getVolMax() - this.baignoire.getVol());
+        while (this.baignoire.getVol() + volDebite <= this.baignoire.getVolMax()){
+
+            synchronized (baignoire) {
+                this.baignoire.setVol(this.volDebite);
+                System.out.println(this.baignoire);
             }
-            this.baignoire.setVol(this.volDebite);
-            System.out.println(this.baignoire);
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

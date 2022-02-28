@@ -12,8 +12,15 @@ public class Baignoire {
 
     void fuite(){
         while (this.vol > 0){
-            this.setVol(- volFuite);
-            System.out.println("FUIIIIIITE " + this);
+            synchronized (this) {
+                this.setVol(- volFuite);
+                System.out.println("FUIIIIIITE " + this);
+            }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
