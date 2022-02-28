@@ -10,6 +10,10 @@ public class MonRunnableRobinet implements Runnable{
 
     @Override
     public void run() {
-        this.robinet.debite();
+        while (this.robinet.getBaignoire().getVolFuite() != 0){
+            if (this.robinet.getBaignoire().getVol() == 0){
+                this.robinet.debite();
+            }
+        }
     }
 }

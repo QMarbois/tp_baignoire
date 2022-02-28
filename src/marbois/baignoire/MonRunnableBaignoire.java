@@ -10,9 +10,11 @@ public class MonRunnableBaignoire implements Runnable{
 
     @Override
     public void run() {
-        this.baignoire.fuite();
-        if (this.baignoire.getVol() == 0 && this.baignoire.getVolFuite() != 0){
-            this.baignoire.colmater();
+        while (this.baignoire.getVolFuite() != 0){
+            this.baignoire.fuite();
+            if (this.baignoire.getVol() == 0 && this.baignoire.getVolFuite() != 0){
+                this.baignoire.colmater();
+            }
         }
     }
 }

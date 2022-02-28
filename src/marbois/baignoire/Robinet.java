@@ -9,6 +9,10 @@ public class Robinet {
         this.volDebite = volDebite;
     }
 
+    public Baignoire getBaignoire() {
+        return baignoire;
+    }
+
     void debite(){
         while (this.baignoire.getVol() < this.baignoire.getVolMax()){
             if (this.baignoire.getVolMax() - this.baignoire.getVol() < this.volDebite){
