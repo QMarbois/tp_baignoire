@@ -1,60 +1,82 @@
 package marbois.baignoire;
 
-public class Baignoire {
-    private final int volMax;
-    private int vol;
-    private int volFuite;
+public class Baignoire implements Runnable {
 
-    public Baignoire(int volMax, int volFuite) {
-        this.volMax = volMax;
-        this.volFuite = volFuite;
+    private Robinet robinet;
+    private int volumeMax;
+
+    private int volume;
+
+    private int volumeDeFuite;
+
+    private int nbFuite;
+
+    public Baignoire( int volumeMax, int volumeDeFuite) {
+
+        this.volumeMax = volumeMax;
+        volume = 0;
+        this.volumeDeFuite = volumeDeFuite;
+        nbFuite = 0;
     }
 
-    void fuite(){
-        while (this.vol > 0){
-            synchronized (this) {
-                this.setVol(- volFuite);
-                System.out.println("FUIIIIIITE " + this);
+    public void fuit() throws InterruptedException {
+
+        while (volumeDeFuite > 0) {
+
+            if (volume == 0) {
+                // Je n'ai pas d'eau et je peux colmater
+                volumeDeFuite -= 1;
+            } else {
+                nbFuite++;
+
+                synchronized (this) {
+                    if (volume - volumeDeFuite < 0) {
+                        volume = 0;
+                    } else {
+                        volume = volume - volumeDeFuite;
+                    }
+                    System.out.println("Ca fuit ---> le volume de la baignoire est : " + volume);
+                }
             }
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+            Thread.sleep(1);
+
         }
-    }
 
-    void colmater(){
-        this.setVolFuite(- 1);
-        System.out.println("COLMATAGATION");
-    }
-
-    public int getVolMax() {
-        return volMax;
-    }
-
-    public int getVol() {
-        return vol;
-    }
-
-    public int getVolFuite() {
-        return volFuite;
-    }
-
-    public void setVol(int vol) {
-        if ((this.vol + vol) >= 0 && (this.vol + vol) <= volMax){
-            this.vol += vol;
+        synchronized (robinet) {
+            System.out.println("Ca ne fuit plus, la fuite a été colmatée, on peut relancer le robinet !!!");
+            robinet.notify();
+            nbFuite = 0;
         }
+
     }
 
-    public void setVolFuite(int volFuite) {
-        if (this.volFuite != 0){
-            this.volFuite += volFuite;
-        }
+    public int getVolume() {
+        return volume;
+    }
+
+    public int getVolumeMax() {
+        return volumeMax;
+    }
+
+    public void setVolume(int volume) {
+        this.volume = volume;
+    }
+
+    public int getNbFuite() {
+        return nbFuite;
+    }
+
+    public void setRobinet(Robinet robinet) {
+        this.robinet = robinet;
     }
 
     @Override
-    public String toString() {
-        return "Volume d'eau contenu --> " + this.getVol() + " /" + this.getVolMax();
+    public void run() {
+        try {
+            fuit();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
